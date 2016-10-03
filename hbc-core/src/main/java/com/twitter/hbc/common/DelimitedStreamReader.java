@@ -53,7 +53,7 @@ public class DelimitedStreamReader {
   }
 
   public String readLine() throws IOException {
-    return readLine(true);
+    return readLine(false);
   }
 
   /**
