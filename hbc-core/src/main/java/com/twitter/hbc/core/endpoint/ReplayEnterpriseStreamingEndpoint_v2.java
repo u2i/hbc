@@ -20,7 +20,7 @@ public class ReplayEnterpriseStreamingEndpoint_v2 extends EnterpriseStreamingEnd
 
     @Override
     public String getURI() {
-        String uri = String.format(BASE_PATH, account.trim(), product.trim(), label.trim());
+        String uri = String.format(BASE_PATH, product.trim(), account.trim(), publisher.trim(), label.trim());
 
         addQueryParameter("fromDate", formatDate(this.fromDate));
         addQueryParameter("toDate", formatDate(this.toDate));
