@@ -27,9 +27,16 @@ import java.util.concurrent.BlockingQueue;
 public class LineStringProcessor extends AbstractProcessor<String> {
   private final static int DEFAULT_BUFFER_SIZE = 50000;
   private DelimitedStreamReader reader;
+  private boolean isReplay = false;
 
   public LineStringProcessor(BlockingQueue<String> queue) {
     super(queue);
+  }
+
+  public LineStringProcessor(BlockingQueue<String> queue, boolean isReplay) {
+    this(queue);
+
+    this.isReplay = isReplay;
   }
 
   public LineStringProcessor(BlockingQueue<String> queue, long offerTimeoutMillis) {
@@ -50,6 +57,6 @@ public class LineStringProcessor extends AbstractProcessor<String> {
 
   @Override
   public void setup(InputStream input) {
-    reader = new DelimitedStreamReader(input, Charsets.UTF_8, DEFAULT_BUFFER_SIZE);
+    reader = new DelimitedStreamReader(input, Charsets.UTF_8, DEFAULT_BUFFER_SIZE, isReplay);
   }
 }

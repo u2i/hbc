@@ -17,6 +17,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.twitter.hbc.RateTracker;
 import com.twitter.hbc.ReconnectionManager;
+import com.twitter.hbc.common.EndOfStreamException;
 import com.twitter.hbc.core.Hosts;
 import com.twitter.hbc.core.HttpConstants;
 import com.twitter.hbc.core.StatsReporter;
@@ -262,6 +263,11 @@ class ClientBase implements Runnable {
       logger.warn(name + " Unknown error processing connection: ", e);
       statsReporter.incrNumDisconnects();
       addEvent(new Event(EventType.DISCONNECTED, e));
+    } catch (EndOfStreamException e) {
+      // we should only get here with Replay streams - this is a quick workaround so that we don't reconnect to
+      // a replay stream once it was successfully consumed.
+      logger.info("{} Reached the end of the stream", name);
+      setExitStatus(new Event(EventType.STOPPED_BY_USER, e));
     } catch (IOException ex) {
       // connection issue? whatever. let's try connecting again
       // we can't really diagnosis the actual disconnection reason without parsing (looking at disconnect message)

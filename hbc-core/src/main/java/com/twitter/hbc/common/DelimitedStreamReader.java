@@ -34,6 +34,8 @@ public class DelimitedStreamReader {
   private int offset;
   private int end; // first invalid byte
 
+  private boolean isReplay;
+
   private static final int DEFAULT_READ_COUNT = 64;
   private static final int MAX_ALLOWABLE_BUFFER_SIZE = 500000;
 
@@ -41,11 +43,16 @@ public class DelimitedStreamReader {
   private static final byte LF = 10;
 
   public DelimitedStreamReader(InputStream stream, Charset charset, int bufferSize) {
+    this(stream, charset, bufferSize, false);
+  }
+
+  public DelimitedStreamReader(InputStream stream, Charset charset, int bufferSize, boolean isReplay) {
     Preconditions.checkArgument(bufferSize > 0);
     this.inputStream = Preconditions.checkNotNull(stream);
     this.charset = Preconditions.checkNotNull(charset);
 
     this.strBuffer = new byte[bufferSize * 2];
+    this.isReplay = isReplay;
 
     buffer = new byte[bufferSize];
     offset = 0;
@@ -72,7 +79,11 @@ public class DelimitedStreamReader {
         int bytesRead = inputStream.read(buffer, end, Math.min(DEFAULT_READ_COUNT, buffer.length - end));
         if (bytesRead < 0) {
           // we failed to read anything more...
-          throw new IOException("Reached the end of the stream");
+          if (isReplay) {
+            throw new EndOfStreamException("Reached the end of the replay stream");
+          } else {
+            throw new IOException("Reached the end of the stream");
+          }
         } else {
           end += bytesRead;
         }
