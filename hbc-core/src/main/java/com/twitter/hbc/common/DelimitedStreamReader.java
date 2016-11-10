@@ -37,7 +37,7 @@ public class DelimitedStreamReader {
   private boolean isReplay;
 
   private static final int DEFAULT_READ_COUNT = 64;
-  private static final int MAX_ALLOWABLE_BUFFER_SIZE = 500000;
+  private static final int MAX_ALLOWABLE_BUFFER_SIZE = 2 * 1024 * 1024;
 
   private static final byte CR = 13;
   private static final byte LF = 10;
